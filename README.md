@@ -1,0 +1,54 @@
+# fedora-notes
+
+Personal notes, observations, and fixes for a **Fedora Linux** developer workstation and desktop running **KDE Plasma 6**.
+
+## System context
+
+| Item | Detail |
+|------|--------|
+| Host | kevin.kevininscoe.com |
+| OS | Fedora 42 (Adams) → 43 |
+| Kernel | 6.19.13-100.fc42.x86_64 |
+| Desktop | KDE Plasma 6 |
+| GPU | AMD Radeon PRO WX 7100 (amdgpu, open-source driver) |
+| CPU | AMD Ryzen 5 5500 |
+| RAM | 128 GB DDR4 |
+
+## Repository layout
+
+```
+fedora-notes/
+└── fedora-42-to-43-upgrade/
+    ├── FEDORA-UPGRADE-43.md              # Full upgrade checklist (pre-upgrade → QA sign-off)
+    ├── notes-container-inventory.md      # Inventory of all 17 Docker Compose services
+    ├── notes-fedora43-upgrade-planning.md  # Research notes and key findings
+    └── notes-system-profile.md           # Hardware, disk layout, and key services
+```
+
+## Contents
+
+### `fedora-42-to-43-upgrade/`
+
+Notes and a step-by-step checklist for the in-place upgrade from Fedora 42 to Fedora 43.
+
+| File | Description |
+|------|-------------|
+| `FEDORA-UPGRADE-43.md` | Full upgrade checklist: pre-upgrade prep, backups, the upgrade itself, post-upgrade verification (OS, Docker, containers, SELinux, Snap, AMD GPU), and a QA sign-off matrix |
+| `notes-fedora43-upgrade-planning.md` | Research notes and key findings from planning the upgrade: breaking changes in F43 (DNF 5, RPM 6, glibc 2.42), Docker/container concerns, and known upgrade failure patterns |
+| `notes-system-profile.md` | Hardware inventory, disk layout, and key services on the host |
+| `notes-container-inventory.md` | Inventory of all 17 Docker Compose services in `/opt/containers`, including images, ports, backup timers, and RUNBOOK status |
+
+## Key issues documented
+
+- **Docker CE + kernel 6.17** — Kernel 6.17 (shipped with Fedora 43) removes legacy `ip_tables` modules that Docker v28.x requires. Upgrade Docker CE to v29.x *before* upgrading Fedora.
+- **AMD amdgpu page faults (kernels 6.17.9–6.18.3)** — Regression affecting some AMD GPU hardware; resolved by 6.18.4+ and 6.19.x. Mitigation: retain multiple kernel entries in GRUB.
+- **KDE Plasma duplicate packages** — Plasma 6.5.1 introduced duplicate package conflicts during upgrade; resolved via `dnf distro-sync --skip-broken` or `dnf downgrade krunner`.
+- **Wine upgrade conflict** — Remove Wine before running `dnf system-upgrade download`.
+- **Woodpecker CI agent restart loop** — Fixed 2026-04-26: pinned to `v3.7.0`, set `WOODPECKER_BACKEND=docker`, added `security_opt: label:disable` for Docker socket SELinux access.
+
+## Environment notes
+
+- SELinux is enforcing (targeted policy).
+- 17 Docker Compose services are managed via systemd and backed up with per-container `backup.service`/`backup.timer` units.
+- Kasm Workspaces 1.18.1 lives at `/opt/kasm` and is managed separately from the Docker Compose stack.
+- System backup uses `rsync` mirrors for `/`, `/boot`, and `/home`; Docker `overlay2` and volumes are excluded and must be snapshotted separately.
