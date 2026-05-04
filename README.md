@@ -18,11 +18,16 @@ Personal notes, observations, and fixes for a **Fedora Linux** developer worksta
 
 ```
 fedora-notes/
-└── fedora-42-to-43-upgrade/
-    ├── FEDORA-UPGRADE-43.md              # Full upgrade checklist (pre-upgrade → QA sign-off)
-    ├── notes-container-inventory.md      # Inventory of all 17 Docker Compose services
-    ├── notes-fedora43-upgrade-planning.md  # Research notes and key findings
-    └── notes-system-profile.md           # Hardware, disk layout, and key services
+├── CLAUDE.md                 # Repo conventions + system context (for coding assistants)
+├── README.md                  # Repo index (this file)
+├── SELINUX_SETUP.md           # SELinux + container labeling notes and fixes
+├── fedora-42-to-43-upgrade/   # In-place upgrade notes (Fedora 42 → 43)
+│   ├── FEDORA-UPGRADE-43.md              # Full upgrade checklist (pre-upgrade → QA sign-off)
+│   ├── notes-container-inventory.md      # Inventory of all 17 Docker Compose services
+│   ├── notes-fedora43-upgrade-planning.md  # Research notes and key findings
+│   └── notes-system-profile.md           # Hardware, disk layout, and key services
+└── garage/
+    └── RUNBOOK.md             # Garage (S3-compatible) ops runbook
 ```
 
 ## Contents
