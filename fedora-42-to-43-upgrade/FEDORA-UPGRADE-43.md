@@ -348,6 +348,35 @@ Source: [System Upgrade to 43 fails due to WINE](https://discussion.fedoraprojec
 
 ---
 
+### WARNING — Salt / SaltStack minion broken on Fedora 43 (Python 3.14) — **confirmed 2026-05-16**
+
+**Affects:** any host running `salt-minion` from the Fedora 43 repo (`salt-3007.6-3.fc43`).
+**Risk level: HIGH** if you manage this host or VMs it runs as Salt minions.
+
+Fedora 43 ships Python 3.14, which introduced breaking changes to the `multiprocessing` pickling protocol. Salt 3007.x has not been updated to handle these changes. Two distinct failure modes are present:
+
+**Failure 1 — Missing undeclared Python dependencies.** The Fedora 43 `salt` RPM declares only `python3-tornado` as a Python dep but actually requires: `python3-looseversion`, `python3-packaging`, `python3-msgpack`, `python3-pyzmq`, `python3-cryptography`, and `python3-tornado`. Without these, `salt-minion` exits immediately on start with `ModuleNotFoundError`.
+
+**Failure 2 — Multiprocessing pickling crash (deeper incompatibility).** Even after installing all missing deps, `salt-minion` starts and connects to the master but cannot respond to commands. It crashes with:
+
+```
+AttributeError: 'SignalHandlingProcess' object has no attribute '_args_for_getstate'
+```
+
+This is caused by Python 3.14 changing how `multiprocessing.popen_forkserver` pickles process objects. Salt's `SignalHandlingProcess` subclass does not implement `__getstate__` in a way compatible with Python 3.14. This is a Salt upstream bug — no patch in `salt-3007.6-3.fc43` at time of writing.
+
+**Practical consequence:** `salt '*' test.ping` returns `[No response]` from any Fedora 43 minion, making the minion effectively non-functional.
+
+**Workaround options (in order of preference):**
+
+1. **Use Fedora 42 base images for VMs** — Salt 3007.5 on Python 3.13 works correctly.
+2. **Wait for Salt upstream fix** — watch https://github.com/saltstack/salt for a Python 3.14 compat PR.
+3. **Skip Salt on short-lived k3s VMs** — these are rebuilt frequently; manage them via SSH/Ansible instead.
+
+**This host (kevin.kevininscoe.com, Fedora 42, Python 3.13):** Salt master is unaffected. Do NOT upgrade this host to Fedora 43 until Salt Python 3.14 compat is confirmed working.
+
+---
+
 ### LOW — Snap / squashfs on F43
 
 Snapd 2.72 is packaged for F43 and generally works. One known failure mode: snap apps fail to mount if `fuse` / `squashfuse` packages are missing.
