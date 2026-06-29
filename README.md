@@ -20,12 +20,15 @@ Personal notes, observations, and fixes for a **Fedora Linux** developer worksta
 fedora-notes/
 ├── CLAUDE.md                 # Repo conventions + system context (for coding assistants)
 ├── README.md                  # Repo index (this file)
+├── RUNBOOK.md                 # Root runbook index → points to subdirectory runbooks
 ├── SELINUX_SETUP.md           # SELinux + container labeling notes and fixes
 ├── fedora-42-to-43-upgrade/   # In-place upgrade notes (Fedora 42 → 43)
 │   ├── FEDORA-UPGRADE-43.md              # Full upgrade checklist (pre-upgrade → QA sign-off)
 │   ├── notes-container-inventory.md      # Inventory of all 17 Docker Compose services
 │   ├── notes-fedora43-upgrade-planning.md  # Research notes and key findings
 │   └── notes-system-profile.md           # Hardware, disk layout, and key services
+├── kde/
+│   └── RUNBOOK.md             # KDE Plasma desktop ops runbook (Plasma/KWin, global shortcuts)
 └── garage/
     └── RUNBOOK.md             # Garage (S3-compatible) ops runbook
 ```
@@ -42,6 +45,15 @@ Notes and a step-by-step checklist for the in-place upgrade from Fedora 42 to Fe
 | `notes-fedora43-upgrade-planning.md` | Research notes and key findings from planning the upgrade: breaking changes in F43 (DNF 5, RPM 6, glibc 2.42), Docker/container concerns, and known upgrade failure patterns |
 | `notes-system-profile.md` | Hardware inventory, disk layout, and key services on the host |
 | `notes-container-inventory.md` | Inventory of all 17 Docker Compose services in `/opt/containers`, including images, ports, backup timers, and RUNBOOK status |
+
+## Runbooks
+
+Operational runbooks are indexed by the root [`RUNBOOK.md`](RUNBOOK.md):
+
+| Runbook | Covers |
+|---------|--------|
+| [`kde/RUNBOOK.md`](kde/RUNBOOK.md) | KDE Plasma desktop — Plasma/KWin recovery, global shortcuts (incl. the `Meta+N` Obsidian quick-capture into the `~/notes` vault), KRunner, and session plumbing |
+| [`garage/RUNBOOK.md`](garage/RUNBOOK.md) | Garage S3-compatible object storage backend |
 
 ## Key issues documented
 
